@@ -25,6 +25,7 @@ public class StrokeToolBar extends ToolBar{
             buttons3.add(new ActiveButton("" + i));
 
         Button strokeButton = new MenuButton("" + 1, buttons3);
+        strokeButton.setTip("Stroke Value");
         strokeButton.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -72,6 +73,7 @@ public class StrokeToolBar extends ToolBar{
 
         // increase/decrease stroke buttons
         Button strokeInc = (new ActiveButton("+"));
+        strokeInc.setTip("Inc. Stroke");
         strokeInc.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -98,6 +100,7 @@ public class StrokeToolBar extends ToolBar{
         addButton(strokeInc);
 
         Button strokeDec = (new ActiveButton("-"));
+        strokeDec.setTip("Dec. Stroke");
         strokeDec.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -127,22 +130,11 @@ public class StrokeToolBar extends ToolBar{
 
     @Override
     public void onPress(int x, int y) {
-        // gets the index of the toggle button pressed if any so that it is later depressed after any click on the toolbar
-        int index = -1;
-        for (int i = 0; i < buttons.size(); i++) {
-            if(buttons.get(i).isPressed() && buttons.get(i) instanceof ToggleButton) {
-                index = i;
-            }
-        }
 
         // buttons pressed
-        for (int i = 0; i < buttons.size(); i++) {
-            if (buttons.get(i).getListener() != null){
-                buttons.get(i).getListener().onPress(x, y);
-                if (i != index && index != -1 && buttons.get(i) instanceof ToggleButton && buttons.get(i).isPressed()){
-                    // button previously toggled is depressed
-                    buttons.get(index).setPressed(false);
-                }
+        for (Button button : buttons) {
+            if (button.getListener() != null) {
+                button.getListener().onPress(x, y);
             }
 
         }

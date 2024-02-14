@@ -1,6 +1,7 @@
 package UI.toolbars;
 
 import UI.Listener;
+import UI.Panel;
 import UI.buttons.ActiveButton;
 import UI.buttons.Button;
 import UI.buttons.MenuButton;
@@ -73,7 +74,7 @@ public class MenuBar extends ToolBar {
                 save.isClicked(x, y);
                 if (save.isPressed()) {
                     save.setHovered(false);
-                    saveFile();
+                    Panel.saveFile();
                 }
             }
 
@@ -119,7 +120,7 @@ public class MenuBar extends ToolBar {
                 undoMenu.isClicked(x, y);
                 if (undoMenu.isPressed()) {
                     undoMenu.setHovered(false);
-                    undo();
+                    Panel.undo();
                 }
             }
 
@@ -189,7 +190,7 @@ public class MenuBar extends ToolBar {
             @Override
             public void onRelease() {
                 if (undo.isPressed())
-                    undo();
+                    Panel.undo();
             }
 
             @Override

@@ -1,6 +1,7 @@
 package UI.windows;
 
 import UI.Listener;
+import UI.Panel;
 import UI.others.TextBox;
 import UI.buttons.ActiveButton;
 import UI.buttons.Button;
@@ -58,7 +59,7 @@ public class FileWindow extends Window{
             @Override
             public void onRelease() {
                 if (open.isPressed()) {
-                    openFile();
+                    Panel.openFile();
                 }
             }
 
@@ -96,7 +97,6 @@ public class FileWindow extends Window{
 
         ToolBar filesToolBar = new FileToolBar("Files:", x + columnWidth, y + rowHeight*2, columnWidth*14, rowHeight*8, 8, 1);
         toolBars.add(filesToolBar);
-
 
     }
 

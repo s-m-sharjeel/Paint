@@ -1,6 +1,8 @@
 package UI.windows;
 
 import UI.Listener;
+import UI.buttons.ActiveButton;
+import UI.buttons.MenuButton;
 import UI.others.TextBox;
 import UI.buttons.Button;
 import UI.toolbars.ToolBar;
@@ -108,9 +110,28 @@ public abstract class Window extends Rectangle implements Listener {
             t.onRelease();
         }
 
-        for (Button b : buttons) {
-            if (b.getListener() != null)
-                b.getListener().onRelease();
+        for (Button button : buttons) {
+            if (button.getListener() != null) {
+                button.getListener().onRelease();
+                if (button instanceof MenuButton){
+                    for (Button menuButton: button.getButtons()) {
+                        if (menuButton.getListener() != null)
+                            menuButton.getListener().onRelease();
+                    }
+                }
+            }
+        }
+
+        for (Button button: buttons) {
+            if (button instanceof ActiveButton)
+                button.setPressed(false);
+            if (button instanceof MenuButton) {
+                if (!button.isVisible())
+                    button.setPressed(false);
+                for (Button menuButton : button.getButtons()) {
+                    menuButton.setPressed(false);
+                }
+            }
         }
 
     }
@@ -125,9 +146,6 @@ public abstract class Window extends Rectangle implements Listener {
 
         for (ToolBar t : toolBars) {
             t.onHover(x, y);
-            for (Button b : t.getButtons()) {
-                b.getListener().onHover(x, y);
-            }
         }
 
     }

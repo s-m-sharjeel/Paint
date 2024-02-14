@@ -7,17 +7,14 @@ import UI.buttons.ToggleButton;
 import UI.others.Grid;
 import UI.others.ToolTip;
 import UI.toolbars.ToolBar;
-import UI.windows.FileWindow;
-import UI.windows.GradientWindow;
-import UI.windows.MainWindow;
-import UI.windows.MessageWindow;
 import UI.windows.Window;
-import shapes.*;
+import UI.windows.*;
 import shapes.Rectangle;
 import shapes.Shape;
+import shapes.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Rectangle2D;
@@ -26,8 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class Panel extends JPanel implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
@@ -36,7 +33,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
     private static final int panelWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
     private static final int panelHeight = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    public static int time = 0;
+    private static int time = 0;
 
     private static Window mainWindow;
     private static Window colorWindow;
@@ -54,7 +51,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
     private static int layerSelected = -1;
     private static boolean drawing;
     private boolean control;
-    private int clicks;
+    private static int clicks;
     private static int shapeChoice;
     private int x1;
     private int y1;
@@ -62,6 +59,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
     private static int customCount = 0;
 
     private static int[][][] gradientColor;
+    private static Point gradientCursor;
     private static int fade = 255;
 
     private static ToolTip toolTip;
@@ -96,13 +94,14 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         mainWindow = new MainWindow(panelX, panelY, panelWidth, 30 + 140);
         fileWindow = new FileWindow(panelX + panelWidth/2 - 600/2, panelY + panelHeight/2 - 550/2, 600, 550);
 
+        drawingX = panelX + 24;
+        drawingY = panelY + mainWindow.getToolBars().get(0).getHeight() + mainWindow.getToolBars().get(1).getHeight() + 20 - 4;
+        drawingWidth = mainWindow.getToolBars().get(1).getWidth() + mainWindow.getToolBars().get(2).getWidth() + mainWindow.getToolBars().get(3).getWidth() + mainWindow.getToolBars().get(4).getWidth() - 48;
+        drawingHeight = panelHeight - mainWindow.getToolBars().get(0).getHeight() - mainWindow.getToolBars().get(1).getHeight() - 62 + 8;
+
         colorWindow = GradientWindow.getInstance();
         toolTip = ToolTip.getInstance();
-
-        drawingX = panelX;
-        drawingY = panelY + mainWindow.getToolBars().get(0).getHeight() + mainWindow.getToolBars().get(1).getHeight();
-        drawingWidth = mainWindow.getToolBars().get(1).getWidth() + mainWindow.getToolBars().get(2).getWidth() + mainWindow.getToolBars().get(3).getWidth() + mainWindow.getToolBars().get(4).getWidth();
-        drawingHeight = panelHeight - mainWindow.getToolBars().get(0).getHeight() - mainWindow.getToolBars().get(1).getHeight();
+        grid = Grid.getInstance();
 
         layerName = new LinkedList<>();
         List<String> list = Arrays.asList("Gold", "Iron", "Sapphire", "Lapis Lazuli", "Diamond", "Obsidian", "Emerald", "Amethyst", "Slime", "Granite", "Carrot", "Sand");
@@ -114,6 +113,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
     }
 
     public void paintComponent(Graphics g) {
+
         super.paintComponent(g);
 
         time+=3;
@@ -125,8 +125,13 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         g.drawRect(drawingX, drawingY, drawingWidth, drawingHeight);
 
         drawShapes(g);
-        if (grid != null)
-            grid.drawGrid(g);
+        grid.draw(g);
+
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(24));
+        g2.draw(new java.awt.Rectangle(drawingX - 12, drawingY - 12, drawingWidth + 24, drawingHeight + 24));
+        g2.setStroke(new BasicStroke(0));
 
         mainWindow.paint(g);
 
@@ -139,11 +144,10 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         if (fileWindow.isOpen())
             fileWindow.paint(g);
 
-        if (toolTip != null)
-            toolTip.draw(g);
-
         if (messageWindow != null)
             messageWindow.paint(g);
+
+        toolTip.draw(g);
 
     }
 
@@ -174,6 +178,33 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
             return;
         }
 
+        // file menu dropdown
+        if (mainWindow.getToolBars().get(0).getButtons().get(0).isVisible()){
+            for (int i = 0; i < 3; i++) {
+                mainWindow.getToolBars().get(0).getButtons().get(0).getButtons().get(i).getListener().onPress(x, y);
+            }
+            mainWindow.getToolBars().get(0).getButtons().get(0).setVisible(false);
+            return;
+        }
+
+        // edit menu dropdown
+        if (mainWindow.getToolBars().get(0).getButtons().get(1).isVisible()) {
+            for (int i = 0; i < 2; i++) {
+                mainWindow.getToolBars().get(0).getButtons().get(1).getButtons().get(i).getListener().onPress(x, y);
+            }
+            mainWindow.getToolBars().get(0).getButtons().get(1).setVisible(false);
+            return;
+        }
+
+        // stroke dropdown
+        if (mainWindow.getToolBars().get(3).getButtons().get(0).isVisible()) {
+            for (int i = 0; i < 7; i++) {
+                mainWindow.getToolBars().get(3).getButtons().get(0).getButtons().get(i).getListener().onPress(x, y);
+            }
+            mainWindow.getToolBars().get(3).getButtons().get(0).setVisible(false);
+            return;
+        }
+
         mainWindow.onPress(x, y);
 
         // drawing shapes
@@ -189,12 +220,17 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
                     if (shapeChoice == 8){
 
                         if (clicks == 0) {
+
+                            // get color from stroke color button
                             shape = new BezierCurve(mainWindow.getToolBars().get(4).getButtons().get(0).getShape().getFillColor());
                             layer.get(0).push(shape);
                             redoList.get(0).clear();
+
+                            // get stroke value from stroke button
                             shape.setStroke(Integer.parseInt(mainWindow.getToolBars().get(3).getButtons().get(0).getText()));
                             shape.setPoint(x, y, 0);
                             shape.setPoint(x, y, 3);
+
                         }
 
                         // set first control point
@@ -208,7 +244,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
                         clicks++;
                         return;
 
-                    }
+                    } else clicks = 0;
 
                     switch (shapeChoice) {
                         case 1 -> shape = new FreeDraw(mainWindow.getToolBars().get(4).getButtons().get(0).getShape().getFillColor());
@@ -236,7 +272,7 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
 
                 } else messageWindow = MessageWindow.getInstance("Error", "Select a shape first!");
 
-            } else messageWindow = MessageWindow.getInstance("Error", "No layer exists to draw on!");
+            }
         }
     }
 
@@ -254,79 +290,70 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
             if (colorWindow.isOpen()){
 
                 // mouse drag on color gradient
-                if (colorWindow.getButtons().get(5).isPressed())
-                    colorWindow.getButtons().get(5).getListener().onPress(x, y);
+                colorWindow.getButtons().get(5).getListener().onPress(x, y);
 
                 // mouse drag on fade gradient
-                if (colorWindow.getButtons().get(6).isPressed())
-                    colorWindow.getButtons().get(6).getListener().onPress(x, y);
+                colorWindow.getButtons().get(6).getListener().onPress(x, y);
 
             }
 
 
             // mouse is dragged on drawing region when windows and dropdowns are not open
-            if (y > drawingY && x < drawingX + drawingWidth && !colorWindow.isOpen() && !fileWindow.isOpen() && !mainWindow.getToolBars().get(3).getButtons().get(0).isVisible()){
+            if (drawing){
 
-                if (shape != null) {
+                // bezier curve
+                if (shapeChoice == 8){
 
-                    if (shapeChoice > 0 && shapeChoice < 9) {
+                    // final anchor point
+                    if (clicks == 1)
+                        shape.setPoint(x, y, 3);
 
-                        // bezier curve
-                        if (shapeChoice == 8){
+                    // first control point
+                    if (clicks == 2)
+                        shape.setPoint(x, y, 1);
 
-                            // final anchor point
-                            if (clicks == 1)
-                                shape.setPoint(x, y, 3);
+                    // second control point
+                    if (clicks == 3)
+                        shape.setPoint(x, y, 2);
 
-                            // first control point
-                            if (clicks == 2)
-                                shape.setPoint(x, y, 1);
-
-                            // second control point
-                            if (clicks == 3)
-                                shape.setPoint(x, y, 2);
-
-                        }
-
-                        int width = Math.abs(x - x1);
-                        int height = Math.abs(y - y1);
-
-                        double base = x - shape.getX();
-                        double perp = shape.getY() - y;
-                        int initAngle = (int)(Math.toDegrees(Math.atan2(perp, base)));
-                        shape.setInitAngle(initAngle);
-
-                        // pythagoras theorem to find radius of circle
-                        int size = (int) (Math.sqrt((width * width) + (height * height)));
-
-                        // free drawing
-                        if (shapeChoice == 1) {
-                            shape.addPixel(e.getX(), e.getY());
-                            return;
-                        }
-
-                        // circle/equilateral-triangle/pentagram
-                        if (shapeChoice == 2 || shapeChoice == 5 || shapeChoice == 7) {
-                            shape.setSize(size);
-                            return;
-                        }
-
-                        // finds top left depending on which quadrant the mouse is dragged into w.r.t the initial point
-                        Point topLeft = new Point(x1, y1);
-                        if (y < y1 && x < x1)
-                            topLeft = new Point(x, y);
-                        else if (y < y1)
-                            topLeft = new Point(x1, y);
-                        else if (x < x1)
-                            topLeft = new Point(x, y1);
-
-                        shape.setPoint(topLeft);
-                        shape.setWidth(width);
-                        shape.setHeight(height);
-
-
-                    }
                 }
+
+                int width = Math.abs(x - x1);
+                int height = Math.abs(y - y1);
+
+                double base = x - shape.getX();
+                double perp = shape.getY() - y;
+                int initAngle = (int)(Math.toDegrees(Math.atan2(perp, base)));
+                shape.setInitAngle(initAngle);
+
+                // pythagoras theorem to find radius of circle
+                int size = (int) (Math.sqrt((width * width) + (height * height)));
+
+                // free drawing
+                if (shapeChoice == 1) {
+                    shape.addPixel(e.getX(), e.getY());
+                    return;
+                }
+
+                // circle/equilateral-triangle/pentagram
+                if (shapeChoice == 2 || shapeChoice == 5 || shapeChoice == 7) {
+                    shape.setSize(size);
+                    return;
+                }
+
+                // finds top left depending on which quadrant the mouse is dragged into w.r.t the initial point
+                Point topLeft = new Point(x1, y1);
+                if (y < y1 && x < x1)
+                    topLeft = new Point(x, y);
+                else if (y < y1)
+                    topLeft = new Point(x1, y);
+                else if (x < x1)
+                    topLeft = new Point(x, y1);
+
+                shape.setPoint(topLeft);
+                shape.setWidth(width);
+                shape.setHeight(height);
+
             }
         }
     }
@@ -347,16 +374,20 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
 
         //panel
         if(SwingUtilities.isLeftMouseButton(e)){
+
             // shape completed
             if (shapeChoice > 0 && shapeChoice < 9) {
 
-                if (shapeChoice == 8 && clicks < 3)
+                if (shapeChoice == 8 && clicks < 3) {
+                    drawing = false;
                     return;
+                }
 
                 shapeChoice = 0;
                 clicks = 0;
                 shape = null;
                 drawing = false;
+
             }
 
         }
@@ -372,23 +403,25 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         // messageWindow opened
         if (messageWindow != null){
             messageWindow.onHover(x, y);
+            setToolTip();
             return;
         }
 
         // colorWindow opened
         if (colorWindow.isOpen()){
             colorWindow.onHover(x, y);
+            setToolTip();
             return;
         }
 
         // fileWindow opened
         if (fileWindow.isOpen()){
             fileWindow.onHover(x, y);
+            setToolTip();
             return;
         }
 
         mainWindow.onHover(x, y);
-
         setToolTip();
 
     }
@@ -404,22 +437,6 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
 
     @Override
     public void keyPressed(KeyEvent e) {
-
-        if (e.getKeyCode() == KeyEvent.VK_ENTER){
-
-            if (messageWindow != null) {
-                messageWindow.close();
-            } else if (colorWindow.isOpen()) {
-                setColorButton(mainWindow.getToolBars().get(4).getButtons().get(22 + colorCount%10), colorWindow.getButtons().get(4));
-                colorCount++;
-                colorWindow.close();
-            } else if (fileWindow.isOpen()) {
-                openFile();
-            }
-
-            return;
-
-        }
 
         // returns if a message window is open
         if (messageWindow != null)
@@ -525,6 +542,14 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         for (int i = 4; i < mainWindow.getToolBars().get(5).getButtons().size(); i++) {
             if (mainWindow.getToolBars().get(5).getButtons().get(i).isPressed()){
                 layerSelected = i - 4;
+            }
+        }
+
+        // sentinel value for shapeChoice
+        shapeChoice = -1;
+        for (int i = 0; i < mainWindow.getToolBars().get(1).getButtons().size(); i++) {
+            if (mainWindow.getToolBars().get(1).getButtons().get(i).isPressed()){
+                shapeChoice = i + 1;
             }
         }
 
@@ -731,8 +756,10 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
                     shape.setStroke(Integer.parseInt(input.nextLine()));
                     for (int j = 0; j < 4; j++) {
                         data = input.nextLine();
-                        temp = data.split(",");
-                        shape.setPoint(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]), j);
+                        if (!data.equals("null")) {
+                            temp = data.split(",");
+                            shape.setPoint(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]), j);
+                        }
                     }
 
                 } else {
@@ -886,6 +913,18 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
             }
         }
 
+        // drawing cursor on gradient
+        if (colorWindow.isOpen() && gradientCursor != null){
+            g2.setStroke(new BasicStroke(3));
+            g2.setColor(Color.red);
+            g2.drawLine(gradientCursor.x, gradientCursor.y - 4, gradientCursor.x, gradientCursor.y - 10);
+            g2.drawLine(gradientCursor.x, gradientCursor.y + 4, gradientCursor.x, gradientCursor.y + 10);
+            g2.drawLine(gradientCursor.x - 4, gradientCursor.y, gradientCursor.x - 10, gradientCursor.y);
+            g2.drawLine(gradientCursor.x + 4, gradientCursor.y, gradientCursor.x + 10, gradientCursor.y);
+        }
+
+        g2.setStroke(new BasicStroke(1));
+
     }
 
     /**
@@ -987,15 +1026,34 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
      * refreshes the page by clearing all the shapes and layers
      */
     public static void renew(){
-        if (mainWindow.getToolBars().get(5).getButtons().size() > 4) {
+
+        // saving all the layer names before deleting them
+        for (int i = 4; i < mainWindow.getToolBars().get(5).getButtons().size(); i++)
+            layerName.add(mainWindow.getToolBars().get(5).getButtons().get(i).getText());
+
+        // deleting layers
+        if (mainWindow.getToolBars().get(5).getButtons().size() > 4)
             mainWindow.getToolBars().get(5).getButtons().subList(4, mainWindow.getToolBars().get(5).getButtons().size()).clear();
-        }
+
         layer.clear();
         redoList.clear();
         addLayer();
     }
 
+    /**
+     * sets tooltip of the button hovered
+     */
     private static void setToolTip(){
+
+        if (messageWindow != null) {
+
+            for (Button b : messageWindow.getButtons()) {
+                if (b.isHovered()) {
+                    toolTip.setButton(b);
+                    return;
+                }
+            }
+        }
 
         if (fileWindow.isOpen()){
 
@@ -1063,6 +1121,10 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
 
         toolTip.setButton(null);
 
+    }
+
+    public static int getTime() {
+        return time;
     }
 
     public static Window getMainWindow() {
@@ -1133,8 +1195,8 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         return fade;
     }
 
-    public static ToolTip getToolTip() {
-        return toolTip;
+    public static Point getGradientCursor() {
+        return gradientCursor;
     }
 
     public static void setColorCount(int colorCount) {
@@ -1149,8 +1211,8 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         Panel.fade = fade;
     }
 
-    public static void setGrid(Grid grid) {
-        Panel.grid = grid;
+    public static void setGridSize(int size) {
+        grid.setSize(size);
     }
 
     public static void setMessageWindow(Window messageWindow) {
@@ -1161,6 +1223,17 @@ public class Panel extends JPanel implements ActionListener, MouseListener, Mous
         Panel.shapeChoice = shapeChoice;
     }
 
+    public static void setClicks(int clicks) {
+        Panel.clicks = clicks;
+    }
+
+    public static void setGradientCursor(Point gradientCursor) {
+        Panel.gradientCursor = gradientCursor;
+    }
+
+    /**
+     * displays a window to confirm exit when close window button pressed
+     */
     public static void confirmExit(){
         messageWindow = MessageWindow.getInstance("Confirm Exit", "Are you sure you want to exit?");
         messageWindow.getButtons().get(1).setText("Exit");

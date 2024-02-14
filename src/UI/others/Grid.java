@@ -1,6 +1,7 @@
 package UI.others;
 
 import java.awt.*;
+import static UI.Panel.*;
 
 public class Grid {
 
@@ -8,24 +9,23 @@ public class Grid {
     private static int drawingY;
     private static int drawingWidth;
     private static int drawingHeight;
-    private static int size;
+    private int size = 0;
     private static final Grid instance = new Grid();
 
     private Grid() {
 
     }
 
-    public static Grid getInstance(int size1, int drawingX1, int drawingY1, int drawingWidth1, int drawingHeight1) {
-        size = size1;
-        drawingX = drawingX1;
-        drawingY = drawingY1;
-        drawingWidth = drawingWidth1;
-        drawingHeight = drawingHeight1;
+    public static Grid getInstance() {
+        drawingX = getDrawingX();
+        drawingY = getDrawingY();
+        drawingWidth = getDrawingWidth();
+        drawingHeight = getDrawingHeight();
 
         return instance;
     }
 
-    public void drawGrid(Graphics g){
+    public void draw(Graphics g){
 
         if (size == 0)
             return;
@@ -44,4 +44,7 @@ public class Grid {
 
     }
 
+    public void setSize(int size) {
+        this.size = size;
+    }
 }

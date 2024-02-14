@@ -23,7 +23,8 @@ public class LayerToolBar extends ToolBar{
         int spacing = 10;
         int buttonSize = width/5;
 
-        UI.buttons.Button addLayerButton = new ActiveButton("+", x + width/2 - spacing - buttonSize - buttonSize/2, y + 30 + spacing + buttonSize, buttonSize, buttonSize);
+        Button addLayerButton = new ActiveButton("+", x + width/2 - spacing - buttonSize - buttonSize/2, y + 30 + spacing + buttonSize, buttonSize, buttonSize);
+        addLayerButton.setTip("Add Layer");
         addLayerButton.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -44,7 +45,8 @@ public class LayerToolBar extends ToolBar{
         });
         buttons.add(addLayerButton);
 
-        UI.buttons.Button removeLayerButton = (new ActiveButton("-", x + width/2 - buttonSize/2, y + 30 + spacing + buttonSize, buttonSize, buttonSize));
+        Button removeLayerButton = (new ActiveButton("-", x + width/2 - buttonSize/2, y + 30 + spacing + buttonSize, buttonSize, buttonSize));
+        removeLayerButton.setTip("Remove Layer");
         removeLayerButton.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -65,7 +67,8 @@ public class LayerToolBar extends ToolBar{
         });
         buttons.add(removeLayerButton);
 
-        UI.buttons.Button raiseLayerButton = (new ActiveButton(new EquilateralTriangle(Color.black, Color.black)));
+        Button raiseLayerButton = (new ActiveButton(new EquilateralTriangle(Color.black, Color.black)));
+        raiseLayerButton.setTip("Raise");
         raiseLayerButton.setBounds(x + width/2 + buttonSize/2 + spacing, y + 30 + spacing + buttonSize, buttonSize, buttonSize / 2);
         raiseLayerButton.setListener(new Listener() {
             @Override
@@ -87,8 +90,9 @@ public class LayerToolBar extends ToolBar{
         });
         buttons.add(raiseLayerButton);
 
-        UI.buttons.Button lowerLayerButton = (new ActiveButton(new EquilateralTriangle(Color.black, Color.black, 270)));
+        Button lowerLayerButton = (new ActiveButton(new EquilateralTriangle(Color.black, Color.black, 270)));
         lowerLayerButton.setBounds(x + width/2 + + buttonSize/2 + spacing, y + 30 + spacing + buttonSize / 2 + buttonSize, buttonSize, buttonSize / 2);
+        lowerLayerButton.setTip("Lower");
 
         lowerLayerButton.setListener(new Listener() {
             @Override
@@ -154,16 +158,6 @@ public class LayerToolBar extends ToolBar{
 
         }
 
-    }
-
-    @Override
-    public void onRelease() {
-
-        for (int i = 0; i < buttons.size(); i++) {
-            buttons.get(i).getListener().onRelease();
-            if (buttons.get(i) instanceof ActiveButton)
-                buttons.get(i).setPressed(false);
-        }
     }
 
 }

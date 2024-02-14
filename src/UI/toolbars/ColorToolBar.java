@@ -21,11 +21,11 @@ public class ColorToolBar extends ToolBar{
     private void initToolBar(){
 
         // stroke color button
-        UI.buttons.Button strokeColorButton = new ToggleButton(new Rectangle(Color.black));
+        Button strokeColorButton = new ToggleButton(new Rectangle(Color.black));
         strokeColorButton.setText("Stroke");
 
         // fill color button
-        UI.buttons.Button fillColorButton = new ToggleButton(new Rectangle(Color.white));
+        Button fillColorButton = new ToggleButton(new Rectangle(Color.white));
         fillColorButton.setText("Fill");
 
         strokeColorButton.setListener(new Listener() {
@@ -173,11 +173,6 @@ public class ColorToolBar extends ToolBar{
             }
 
         }
-    }
-
-    @Override
-    public void onRelease() {
-        super.onRelease();
     }
 
 }

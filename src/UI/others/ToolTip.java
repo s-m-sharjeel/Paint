@@ -1,13 +1,11 @@
 package UI.others;
 
 import UI.buttons.Button;
-
 import java.awt.*;
 
 public class ToolTip {
 
-    private final int gap = 5;
-    private UI.buttons.Button button;
+    private Button button;
     private static final ToolTip instance = new ToolTip();
 
     private	ToolTip() {
@@ -23,7 +21,10 @@ public class ToolTip {
         if (button == null)
             return;
 
+        int gap = 5;
+
         String tip = button.getTip();
+
         if (tip.length() > 0){
             g.setColor(Color.black);
             g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));

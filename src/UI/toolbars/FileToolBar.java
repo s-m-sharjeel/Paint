@@ -20,8 +20,12 @@ public class FileToolBar extends ToolBar{
         TITLE_ON_TOP();
         LEFT_ALIGN();
 
-        for (String file : Panel.getFiles())
-            addButton(new ActiveButton(file));
+        Button fileButton;
+        for (String file : Panel.getFiles()) {
+            fileButton = new ActiveButton(file);
+            fileButton.setTip("Select File");
+            addButton(fileButton);
+        }
 
         for (Button b: buttons) {
             b.setListener(new Listener() {

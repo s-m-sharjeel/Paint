@@ -34,8 +34,8 @@ public class Pentagram extends Shape {
 
             } else {
 
-                tempX = point.x + (int) ((size / 2) * Math.cos(Math.toRadians(initAngle + angle)));
-                tempY = point.y - (int) ((size / 2) * Math.sin(Math.toRadians(initAngle + angle)));
+                tempX = point.x + (int) (((size - 1) / 2.5) * Math.cos(Math.toRadians(initAngle + angle)));
+                tempY = point.y - (int) (((size - 1) / 2.5) * Math.sin(Math.toRadians(initAngle + angle)));
 
             }
 

@@ -50,38 +50,6 @@ public class MainWindow extends Window{
     }
 
     @Override
-    public void onPress(int x, int y) {
-
-        // file menu dropdown
-        if (toolBars.get(0).getButtons().get(0).isVisible()){
-            for (int i = 0; i < 3; i++) {
-                toolBars.get(0).getButtons().get(0).getButtons().get(i).getListener().onPress(x, y);
-            }
-            toolBars.get(0).getButtons().get(0).setVisible(false);
-            return;
-        }
-
-        // edit menu dropdown
-        if (toolBars.get(0).getButtons().get(1).isVisible()) {
-            for (int i = 0; i < 2; i++) {
-                toolBars.get(0).getButtons().get(1).getButtons().get(i).getListener().onPress(x, y);
-            }
-            toolBars.get(0).getButtons().get(1).setVisible(false);
-            return;
-        }
-
-        // stroke dropdown
-        if (toolBars.get(3).getButtons().get(0).isVisible()) {
-            for (int i = 0; i < 7; i++) {
-                toolBars.get(3).getButtons().get(0).getButtons().get(i).getListener().onPress(x, y);
-            }
-            return;
-        }
-
-        super.onPress(x, y);
-    }
-
-    @Override
     public void onHover(int x, int y) {
 
         // file menu dropdown

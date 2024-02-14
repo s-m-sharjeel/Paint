@@ -22,11 +22,11 @@ public class CustomColorToolBar extends ToolBar{
         TITLE_ON_TOP();
 
         for (int i = 0; i < 16; i++) {
-            addButton(new ActiveButton(new Rectangle(Color.white)));
-            buttons.get(i).setTip("R:" + 255 + " G:" + 255 + " B:" + 255);
+            addButton(new ActiveButton(new Rectangle(new Color(239, 239, 239))));
+            buttons.get(i).setTip("R:" + 239 + " G:" + 239 + " B:" + 239);
         }
 
-        for (UI.buttons.Button b : buttons) {
+        for (Button b : buttons) {
             b.setListener(new Listener() {
                 @Override
                 public void onPress(int x, int y) {

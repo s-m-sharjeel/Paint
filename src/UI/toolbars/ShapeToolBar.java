@@ -7,6 +7,7 @@ import shapes.*;
 import shapes.Rectangle;
 import java.awt.*;
 
+import static UI.Panel.setClicks;
 import static UI.Panel.setShapeChoice;
 
 public class ShapeToolBar extends ToolBar{
@@ -18,7 +19,7 @@ public class ShapeToolBar extends ToolBar{
 
     private void initToolBar(){
 
-        UI.buttons.Button freeDraw = new ToggleButton(new FreeDraw(Color.black));
+        Button freeDraw = new ToggleButton(new FreeDraw(Color.black));
         freeDraw.setText("Free Draw");
         addLeftButton(freeDraw);
 
@@ -29,21 +30,15 @@ public class ShapeToolBar extends ToolBar{
         addButton(new ToggleButton(new Hexagon(), "Hexagon"));
         addButton(new ToggleButton(new Pentagram(), "Pentagram"));
 
-        UI.buttons.Button eraserButton = new ToggleButton(new BezierCurve(Color.black));
-        eraserButton.setText("Bezier Curve");
-        addRightButton(eraserButton);
+        Button bezierButton = new ToggleButton(new BezierCurve(Color.black));
+        bezierButton.setText("Bezier Curve");
+        addRightButton(bezierButton);
 
-        int j = 1;
         for (Button button : buttons) {
-            int finalI = j;
             button.setListener(new Listener() {
                 @Override
                 public void onPress(int x, int y) {
-
                     button.isClicked(x, y);
-
-                    if (button.isPressed())
-                        setShapeChoice(finalI);
                 }
 
                 @Override
@@ -56,7 +51,6 @@ public class ShapeToolBar extends ToolBar{
                     button.hover(x, y);
                 }
             });
-            j++;
         }
 
     }

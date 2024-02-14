@@ -17,6 +17,7 @@ public class GridToolBar extends ToolBar{
     private void initToolBar(){
 
         Button gridButton = new GridButton("OFF");
+        gridButton.setTip("Grid State");
         gridButton.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -26,7 +27,7 @@ public class GridToolBar extends ToolBar{
                     if (gridButton.getText().equals("OFF"))
                         size = 0;
                     else size = Integer.parseInt(gridButton.getText());
-                    setGrid(Grid.getInstance(size, getDrawingX(), getDrawingY(), getDrawingWidth(), getDrawingHeight()));
+                    setGridSize(size);
                 }
             }
 

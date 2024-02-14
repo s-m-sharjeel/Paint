@@ -39,7 +39,7 @@ public class GradientWindow extends Window{
         int rowHeight = height/14;
         int spacing = 5;
 
-        UI.buttons.Button close = new CloseButton(x + width - columnWidth, y, columnWidth, rowHeight);
+        Button close = new CloseButton(x + width - columnWidth, y, columnWidth, rowHeight);
         close.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -60,7 +60,7 @@ public class GradientWindow extends Window{
         });
         buttons.add(close);
 
-        UI.buttons.Button ok = (new ActiveButton("OK", x + spacing, y + height - rowHeight + spacing, 3*(columnWidth - spacing), rowHeight - spacing*2));
+        Button ok = (new ActiveButton("OK", x + spacing, y + height - rowHeight + spacing, 3*(columnWidth - spacing), rowHeight - spacing*2));
         ok.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -83,7 +83,7 @@ public class GradientWindow extends Window{
         });
         buttons.add(ok);
 
-        UI.buttons.Button cancel = (new ActiveButton("Cancel", x + spacing + 3*(columnWidth - spacing) + spacing, y + height - rowHeight + spacing, 3*(columnWidth - spacing), rowHeight - spacing*2));
+        Button cancel = (new ActiveButton("Cancel", x + spacing + 3*(columnWidth - spacing) + spacing, y + height - rowHeight + spacing, 3*(columnWidth - spacing), rowHeight - spacing*2));
         cancel.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -104,7 +104,7 @@ public class GradientWindow extends Window{
         });
         buttons.add(cancel);
 
-        UI.buttons.Button addCustom = (new ActiveButton("Add to Custom Colors", x + columnWidth*8 + spacing, y + height - rowHeight + spacing, columnWidth*8 - spacing*2, rowHeight - spacing*2));
+        Button addCustom = (new ActiveButton("Add to Custom Colors", x + columnWidth*8 + spacing, y + height - rowHeight + spacing, columnWidth*8 - spacing*2, rowHeight - spacing*2));
         addCustom.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -124,14 +124,14 @@ public class GradientWindow extends Window{
                 addCustom.hover(x, y);
             }
         });
-        getButtons().add(addCustom);
+        buttons.add(addCustom);
 
-        UI.buttons.Button colorSelected = new ActiveButton(new Rectangle(Color.white));
+        Button colorSelected = new ActiveButton(new Rectangle(new Color(239, 239, 239)));
         colorSelected.setBounds(x + columnWidth*8 + spacing, y + (rowHeight*9) + spacing, columnWidth*4 - spacing*2, rowHeight*3 - spacing*2);
         colorSelected.setText("Color Selected");
-        getButtons().add(colorSelected);
+        buttons.add(colorSelected);
 
-        UI.buttons.Button colorGradient = new ActiveButton("", x + spacing + 40, y + rowHeight*2 + spacing, 510, 255);
+        Button colorGradient = new ActiveButton("", x + spacing + 40, y + rowHeight*2 + spacing, 510, 255);
         colorGradient.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
@@ -152,13 +152,13 @@ public class GradientWindow extends Window{
         });
         getButtons().add(colorGradient);
 
-        UI.buttons.Button fade = new ActiveButton("", x + spacing + 40 + columnWidth*16 - spacing*2 - 120 + spacing + 20, y + rowHeight*2 + spacing, 30, 255);
+        Button fade = new ActiveButton("", x + spacing + 40 + columnWidth*16 - spacing*2 - 120 + spacing + 20, y + rowHeight*2 + spacing, 30, 255);
         fade.setListener(new Listener() {
             @Override
             public void onPress(int x, int y) {
                 fade.isClicked(x, y);
                 if (fade.isPressed())
-                    setFade(x, y);
+                    setFade(y);
             }
 
             @Override
@@ -200,21 +200,21 @@ public class GradientWindow extends Window{
      */
     private void setColorFromGradient(int x, int y){
 
+        setGradientCursor(new Point(x, y));
+
         int X = x - getColorWindow().getButtons().get(5).getX();
         int Y = y - getColorWindow().getButtons().get(5).getY();
 
-        if (X >= 0 && X < 510 && Y >= 0 && Y < 254){
+        int red = getGradientColor()[X][Y][0];
+        int green = getGradientColor()[X][Y][1];
+        int blue = getGradientColor()[X][Y][2];
 
-            int red = getGradientColor()[X][Y][0];
-            int green = getGradientColor()[X][Y][1];
-            int blue = getGradientColor()[X][Y][2];
-
-            getColorWindow().getButtons().get(4).getShape().setFillColor(new Color(red, green, blue));
-            getColorWindow().textBoxes.get(1).setText("Red:    " + red);
-            getColorWindow().textBoxes.get(2).setText("Green:  " + green);
-            getColorWindow().textBoxes.get(3).setText("Blue:   " + blue);
-            getColorWindow().getButtons().get(4).setTip("R:" + red + " G:" + green + " B:" + blue);
-        }
+        // set color of color-selected-button
+        getColorWindow().getButtons().get(4).getShape().setFillColor(new Color(red, green, blue));
+        getColorWindow().textBoxes.get(1).setText("Red:    " + red);
+        getColorWindow().textBoxes.get(2).setText("Green:  " + green);
+        getColorWindow().textBoxes.get(3).setText("Blue:   " + blue);
+        getColorWindow().getButtons().get(4).setTip("R:" + red + " G:" + green + " B:" + blue);
 
     }
 
@@ -238,19 +238,37 @@ public class GradientWindow extends Window{
         }
 
         g2.setColor(Color.red);
-        g2.fillRect(x, y + (255 - UI.Panel.getFade()) - 1, width, 3);
+        g2.fillRect(x, y + (255 - Panel.getFade()) - 1, width, 3);
 
     }
 
     /**
      * sets the fade from the fade gradient
      */
-    private void setFade(int x, int y){
+    private void setFade(int y){
 
-        int X = x - getColorWindow().getButtons().get(6).getX();
-        int Y = y - getColorWindow().getButtons().get(6).getY();
+        int height = y - getColorWindow().getButtons().get(6).getY();
 
-        Panel.setFade(255 - Y);
+        if (getGradientCursor() != null){
+
+            int X = getGradientCursor().x - getColorWindow().getButtons().get(5).getX();
+            int Y = getGradientCursor().y - getColorWindow().getButtons().get(5).getY();
+
+            int red = getGradientColor()[X][Y][0];
+            int green = getGradientColor()[X][Y][1];
+            int blue = getGradientColor()[X][Y][2];
+
+            // set color of color-selected-button
+            getColorWindow().getButtons().get(4).getShape().setFillColor(new Color(red, green, blue));
+            getColorWindow().textBoxes.get(1).setText("Red:    " + red);
+            getColorWindow().textBoxes.get(2).setText("Green:  " + green);
+            getColorWindow().textBoxes.get(3).setText("Blue:   " + blue);
+            getColorWindow().getButtons().get(4).setTip("R:" + red + " G:" + green + " B:" + blue);
+
+
+        }
+
+        Panel.setFade(255 - height);
 
     }
 

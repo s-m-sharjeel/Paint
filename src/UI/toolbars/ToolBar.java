@@ -19,9 +19,10 @@ public abstract class ToolBar extends Rectangle implements Listener {
     private int leftButtons;
     private int rightButtons;
     protected final int spacing = 5;
-    protected final LinkedList<UI.buttons.Button> buttons = new LinkedList<>();
+    protected final LinkedList<Button> buttons = new LinkedList<>();
     private boolean titleOnTop;
     private boolean leftAlign;
+    private boolean pressed;
 
     public ToolBar(String title, int x, int y, int width, int height) {
         super(x, y, width, height);
@@ -93,10 +94,10 @@ public abstract class ToolBar extends Rectangle implements Listener {
 
     private void paintButtons(Graphics g) {
 
-        for (UI.buttons.Button button: buttons) {
+        for (Button button: buttons) {
             button.paint(g);
             if (button instanceof MenuButton) {
-                for (UI.buttons.Button menuButton : button.getButtons()) {
+                for (Button menuButton : button.getButtons()) {
                     if (menuButton.isPressed())
                         menuButton.paint(g);
                 }
@@ -107,7 +108,7 @@ public abstract class ToolBar extends Rectangle implements Listener {
     /**
      * adds a button to the list of buttons
      */
-    public void addButton(UI.buttons.Button button){
+    public void addButton(Button button){
 
         int titleHeight = 0;
         if (titleOnTop)
@@ -126,7 +127,7 @@ public abstract class ToolBar extends Rectangle implements Listener {
     /**
      * adds a button to the list of buttons at some index i
      */
-    public void addButton(UI.buttons.Button button, int index){
+    public void addButton(Button button, int index){
 
         int rowHeight = height/10;
 
@@ -152,7 +153,7 @@ public abstract class ToolBar extends Rectangle implements Listener {
     /**
      * adds a button to the left of the toolbar
      */
-    public void addLeftButton(UI.buttons.Button button){
+    public void addLeftButton(Button button){
 
         int titleHeight = 0;
         if (titleOnTop)
@@ -171,7 +172,7 @@ public abstract class ToolBar extends Rectangle implements Listener {
     /**
      * adds a button to the right of the toolbar
      */
-    public void addRightButton(UI.buttons.Button button){
+    public void addRightButton(Button button){
 
         int titleHeight = 0;
         if (titleOnTop)
@@ -199,10 +200,10 @@ public abstract class ToolBar extends Rectangle implements Listener {
      */
     public void LEFT_ALIGN(){
         leftAlign = true;
-        for (UI.buttons.Button button: buttons) {
+        for (Button button: buttons) {
             button.LEFT_ALIGN();
             if (button instanceof MenuButton) {
-                for (UI.buttons.Button menuButton : button.getButtons()) {
+                for (Button menuButton : button.getButtons()) {
                     if (menuButton.isPressed())
                         menuButton.LEFT_ALIGN();
                 }
@@ -212,13 +213,15 @@ public abstract class ToolBar extends Rectangle implements Listener {
 
     public void setPressed(boolean pressed) {
 
-        for (UI.buttons.Button button: buttons) {
+        this.pressed = pressed;
+
+        for (Button button: buttons) {
             if (button instanceof ActiveButton)
                 button.setPressed(pressed);
             if (button instanceof MenuButton) {
                 if (!button.isVisible())
                     button.setPressed(false);
-                for (UI.buttons.Button menuButton : button.getButtons()) {
+                for (Button menuButton : button.getButtons()) {
                     menuButton.setPressed(pressed);
                 }
             }
@@ -226,15 +229,19 @@ public abstract class ToolBar extends Rectangle implements Listener {
 
     }
 
+    public boolean isPressed() {
+        return pressed;
+    }
+
     public void setHovered(boolean hovered) {
 
-        for (UI.buttons.Button button: buttons) {
+        for (Button button: buttons) {
             if (button instanceof ActiveButton)
                 button.setHovered(hovered);
             if (button instanceof MenuButton) {
                 if (!button.isVisible())
                     button.setHovered(false);
-                for (UI.buttons.Button menuButton : button.getButtons()) {
+                for (Button menuButton : button.getButtons()) {
                     menuButton.setHovered(hovered);
                 }
             }
@@ -244,11 +251,11 @@ public abstract class ToolBar extends Rectangle implements Listener {
 
     public void onRelease() {
 
-        for (UI.buttons.Button button : buttons) {
+        for (Button button : buttons) {
             if (button.getListener() != null) {
                 button.getListener().onRelease();
                 if (button instanceof MenuButton){
-                    for (UI.buttons.Button menuButton: button.getButtons()) {
+                    for (Button menuButton: button.getButtons()) {
                         if (menuButton.getListener() != null)
                             menuButton.getListener().onRelease();
                     }
@@ -256,13 +263,13 @@ public abstract class ToolBar extends Rectangle implements Listener {
             }
         }
 
-        for (UI.buttons.Button button: buttons) {
+        for (Button button: buttons) {
             if (button instanceof ActiveButton)
                 button.setPressed(false);
             if (button instanceof MenuButton) {
                 if (!button.isVisible())
                     button.setPressed(false);
-                for (UI.buttons.Button menuButton : button.getButtons()) {
+                for (Button menuButton : button.getButtons()) {
                     menuButton.setPressed(false);
                 }
             }
@@ -272,7 +279,7 @@ public abstract class ToolBar extends Rectangle implements Listener {
 
     public void onHover(int x, int y) {
 
-        for (UI.buttons.Button button : buttons) {
+        for (Button button : buttons) {
             if (button.getListener() != null) {
                 button.getListener().onHover(x, y);
             }
