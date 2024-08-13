@@ -1,4 +1,5 @@
-# paint-app
+# Paint
+
 Navigation Controls & shortcuts:
 CTRL+N : New File
 CTRL+S : Save File
